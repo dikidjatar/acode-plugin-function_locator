@@ -2,6 +2,8 @@
 
 The **Function Locator plugin** is a powerful tool designed to enhance your coding experience by providing a seamless way to locate and navigate functions within your codebase.
 
+> Note: Currently only available for Javascript
+
 ## Features
 - **Sidebar Function List:** The plugin generates a sidebar that displays a list of functions present in your code.
 - **Click to Navigate:** Simply click on a function name in the sidebar, and the plugin will instantly navigate your code editor to the corresponding function.
