@@ -1,0 +1,16 @@
+{
+  "id": "acode.plugin.function_locator",
+  "name": "Function Locator",
+  "main": "dist/main.js",
+  "version": "1.0.0",
+  "readme": "readme.md",
+  "icon": "icon.png",
+  "files": [],
+  "minVersionCode" : 290,
+  "price": 0,
+  "author": {
+    "name": "Diki Djatar",
+    "email": "dikidjatar@gmail.com",
+    "github": "dikidjatar"
+  }
+}

@@ -1,0 +1,47 @@
+.sidebar-func-locator {
+    * { box-sizing: border-box; }
+
+    .sidebar-func-locator-heading {
+        text-align: center;
+        padding: 10px 0;
+        font-size: 1rem;
+    }
+
+    .item-list {
+        font-size: 0.9rem;
+        overflow: scroll;
+
+        .type-class {
+            color: rgb(121, 192, 255);
+            background-color: rgba(121, 192, 255, 0.2);
+            border-radius: 5px;
+        }
+
+        .text {
+            padding-left: 8px;
+        }
+        
+        .type-func {
+            color: rgb(210, 168, 255);
+            border-radius: 5px;
+            background-color: rgba(210, 168, 255, 0.2);
+        }
+
+        .method-action {
+            padding-top: 8px;
+            padding-left: 35px;
+            padding-bottom: 8px;
+        }
+
+        .function-list {
+            padding: 6px 18px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+    }
+
+    
+}
