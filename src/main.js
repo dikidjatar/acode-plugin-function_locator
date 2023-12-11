@@ -29,19 +29,52 @@ class FunctionLocator {
     document.head.append(this.$style);
   }
 
+  /**
+   * Setup sidebar function locator
+   */
   setupFunctionLocatorContainer() {
-    this.$funcLocatorContainer = tag('div', { className: 'sidebar-func-locator' });
-    this.$sidebarTitle = tag('h1', {
-      textContent: 'Function Locator',
-      className: 'sidebar-func-locator-heading'
-    });
-    this.$locatorArea = tag('div', { className: 'locator-area' });
+    this.$funcLocatorContainer = tag('div', { className: 'container sidebar-func-locator' });
 
-    this.$funcLocatorContainer.append(this.$sidebarTitle, this.$locatorArea);
+    const $header = <div className='header'>
+      <span className='title'>Function Locator</span>
+    </div>
+
+    this.$locatorArea = tag('div', { className: 'container locator-area' });
+
+    this.$funcLocatorContainer.append($header, this.$locatorArea);
 
     sidebarApps.add('detect-icon', 'detect-sidebar-app', 'Detect', (app) => {
       app.append(this.$funcLocatorContainer);
     });
+  }
+
+  /**
+   * List scroll
+   * @returns
+   */
+  collapsableList() {
+    const $ul = tag('ul', {
+      className: 'scroll',
+    });
+
+    const $mainWrapper = tag('div', {
+      className: 'list collapsible',
+      children: [$ul],
+    });
+
+    [$mainWrapper].forEach(defineProperties);
+
+    return $mainWrapper;
+
+    function defineProperties($el) {
+      Object.defineProperties($el, {
+        $ul: {
+          get() {
+            return $ul;
+          }
+        }
+      })
+    }
   }
 
   /**
@@ -52,6 +85,10 @@ class FunctionLocator {
     editor.on('blur', this.detectClassesAndFunctions.bind(this));
   }
 
+  /**
+   * Detect classes and fnctions Javascript
+   * @returns 
+   */
   async detectClassesAndFunctions() {
     try {
       const editorContent = editor.getValue();
@@ -63,10 +100,14 @@ class FunctionLocator {
       this.displayClassesAndFunctions(result);
     } catch (error) {
       this.$locatorArea.innerHTML = '';
-      console.log(error);
     }
   }
 
+  /**
+   * Parse editor content
+   * @param {string} editorContent 
+   * @returns 
+   */
   parseEditorContent(editorContent) {
     const result = [];
 
@@ -101,54 +142,61 @@ class FunctionLocator {
     if (node.declarations.length === 1 && node.declarations[0].init && node.declarations[0].init.type === 'ArrowFunctionExpression') {
       result.push({ name: node.declarations[0].id.name, type: 'func' });
     }
+    this.displayClassesAndFunctions
   }
 
   /**
    * Fungsi untuk menampilkan daftar di sidebar
-   * @param { object } items 
+   * @param { object } [items]
    */
   displayClassesAndFunctions(items) {
     this.$locatorArea.innerHTML = '';
 
-    const itemList = document.createElement('div');
-    itemList.className = 'item-list';
+    const $itemList = this.collapsableList();
 
     items.forEach(item => {
       if (item.type == 'class') {
-        const methodList = this.createMethodList(item);
-        const tile = this.createClassTile(item, methodList);
+        const methods = this.createMethodList(item);
+        const tile = this.createClassTile(item, methods);
 
-        itemList.append(tile, methodList);
+        $itemList.$ul.append(tile, methods);
       } else {
-        const functionList = this.createFunctionList(item);
-        itemList.append(functionList);
+        const functions = this.createFunctionList(item);
+        $itemList.$ul.append(functions);
       }
     });
 
-    this.$locatorArea.append(itemList);
+    this.$locatorArea.append($itemList);
+    this.createClassTile
   }
 
+  /**
+   * 
+   * @param {object} [item]
+   * @param {HTMLElement} m
+   * @returns 
+   */
   createClassTile(item, m) {
     const tile = document.createElement('div');
     tile.className = 'tile';
     tile.innerHTML = this.getExpandTileContent(item);
 
     tile.onclick = () => { this.toggleMethodList(tile, item, m) }
-
+    
     return tile;
   }
 
   createMethodList(item) {
     const methodList = document.createElement('div');
-    methodList.className = 'method-list';
+    methodList.className = 'methods';
 
-    const methodElements = item.methods.map(m => `<div class="method-action" data-name="${m}" data-cn="${item.name}"><span class="type-func">func</span><span class="text method-name"><code>${m}</code></span></div>`);
+    const methodElements = item.methods.map(m => `<div class="method" data-name="${m}" data-cn="${item.name}"><span class="type-func">func</span><span class="text"><code>${m}</code></span></div>`);
     methodList.innerHTML = methodElements.join(' ');
 
-    const methodAction = methodList.querySelectorAll('.method-action');
-    methodAction.forEach(btn => {
-      btn.onclick = () => {
-        const targetRow = this.findRowOfFunction('class', btn.dataset.name, btn.dataset.cn);
+    const methods = methodList.querySelectorAll('.method');
+    methods.forEach(method => {
+      method.onclick = () => {
+        const targetRow = this.findRowOfFunction('class', method.dataset.name, method.dataset.cn);
         if (targetRow != null) editor.gotoLine(targetRow + 1, 0, true);
       }
     });
@@ -156,6 +204,12 @@ class FunctionLocator {
     return methodList;
   }
 
+  /**
+   * 
+   * @param {HTMLElement} tile 
+   * @param {object} item 
+   * @param {HTMLElement} m 
+   */
   toggleMethodList(tile, item, m) {
     m.classList.toggle('hidden');
     const isClick = m.classList.contains('hidden');
@@ -164,7 +218,7 @@ class FunctionLocator {
 
   createFunctionList(item) {
     const functionList = document.createElement('div');
-    functionList.className = 'function-list';
+    functionList.className = 'function';
 
     functionList.innerHTML = `<span class="type-${item.type}"><code>${item.type}</code></span> <span class="text"><code>${item.name}</code></span>`;
 
